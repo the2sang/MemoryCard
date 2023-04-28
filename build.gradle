@@ -1,7 +1,7 @@
 buildscript {
     configurations['classpath'].resolutionStrategy.eachDependency {
         if (requested.group == 'org.jooq') {
-            useVersion '3.18.0'
+            useVersion '3.18.3'
         }
     }
 }
@@ -35,9 +35,9 @@ dependencies {
 
     //JOOQ - GenerationTool Dependency
     // https://mvnrepository.com/artifact/org.jooq/jooq-codegen-maven
-    implementation 'org.jooq:jooq-codegen-maven:3.18.0'
+    implementation 'org.jooq:jooq-codegen-maven:3.18.3'
     // https://mvnrepository.com/artifact/org.jooq/jooq-meta
-    implementation 'org.jooq:jooq-meta:3.18.0'
+    implementation 'org.jooq:jooq-meta:3.18.3'
 
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -46,7 +46,7 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-    jooqGenerator 'org.postgresql:postgresql:42.5.1'
+    jooqGenerator 'org.postgresql:postgresql:42.6.0'
 
     // https://mvnrepository.com/artifact/org.flywaydb/flyway-core
     implementation 'org.flywaydb:flyway-core'
@@ -60,9 +60,9 @@ tasks.named('test') {
 
 
 flyway {
-    url = 'jdbc:postgresql://localhost:5432/'
-    user = 'postgres'
-    password = 'postgres'
+    url = 'jdbc:postgresql://localhost:5432/memorycard'
+    user = 'carduser'
+    password = 'carduser'
     locations = ['classpath:db/migration']
 }
 
@@ -71,7 +71,7 @@ flyway {
 import org.jooq.meta.jaxb.Logging
 
 jooq {
-    version = '3.18.0'  // default (can be omitted)
+    version = '3.18.3'  // default (can be omitted)
     edition = nu.studer.gradle.jooq.JooqEdition.OSS  // default (can be omitted)
 
     configurations {
@@ -82,9 +82,9 @@ jooq {
                 logging = Logging.WARN
                 jdbc {
                     driver = 'org.postgresql.Driver'
-                    url = 'jdbc:postgresql://localhost:5432/postgres'
-                    user = 'postgres'
-                    password = 'postgres'
+                    url = 'jdbc:postgresql://localhost:5432/memorycard'
+                    user = 'carduser'
+                    password = 'carduser'
                     properties {
                         property {
                             key = 'ssl'
