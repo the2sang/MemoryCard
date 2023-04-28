@@ -1,0 +1,129 @@
+buildscript {
+    configurations['classpath'].resolutionStrategy.eachDependency {
+        if (requested.group == 'org.jooq') {
+            useVersion '3.18.0'
+        }
+    }
+}
+
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.0.6'
+    id 'io.spring.dependency-management' version '1.1.0'
+    id 'nu.studer.jooq' version '8.2'
+    id "org.flywaydb.flyway" version "9.16.3"
+}
+
+group = 'com.memorycard'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-jooq'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    //JOOQ - GenerationTool Dependency
+    // https://mvnrepository.com/artifact/org.jooq/jooq-codegen-maven
+    implementation 'org.jooq:jooq-codegen-maven:3.18.0'
+    // https://mvnrepository.com/artifact/org.jooq/jooq-meta
+    implementation 'org.jooq:jooq-meta:3.18.0'
+
+
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    implementation 'org.postgresql:postgresql'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+    jooqGenerator 'org.postgresql:postgresql:42.5.1'
+
+    // https://mvnrepository.com/artifact/org.flywaydb/flyway-core
+    implementation 'org.flywaydb:flyway-core'
+
+
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+
+flyway {
+    url = 'jdbc:postgresql://localhost:5432/'
+    user = 'postgres'
+    password = 'postgres'
+    locations = ['classpath:db/migration']
+}
+
+
+//JooqApplication.init() 참고
+import org.jooq.meta.jaxb.Logging
+
+jooq {
+    version = '3.18.0'  // default (can be omitted)
+    edition = nu.studer.gradle.jooq.JooqEdition.OSS  // default (can be omitted)
+
+    configurations {
+        main {  // name of the jOOQ configuration
+            generateSchemaSourceOnCompilation = true  // default (can be omitted)
+
+            generationTool {
+                logging = Logging.WARN
+                jdbc {
+                    driver = 'org.postgresql.Driver'
+                    url = 'jdbc:postgresql://localhost:5432/postgres'
+                    user = 'postgres'
+                    password = 'postgres'
+                    properties {
+                        property {
+                            key = 'ssl'
+                            value = 'false'
+                        }
+                    }
+                }
+                generator {
+                    name = 'org.jooq.codegen.DefaultGenerator'
+                    database {
+                        name = 'org.jooq.meta.postgres.PostgresDatabase'
+                        inputSchema = 'public'
+                        forcedTypes {
+                            forcedType {
+                                name = 'varchar'
+                                includeExpression = '.*'
+                                includeTypes = 'JSONB?'
+                            }
+                            forcedType {
+                                name = 'varchar'
+                                includeExpression = '.*'
+                                includeTypes = 'INET'
+                            }
+                        }
+                    }
+                    generate {
+                        deprecated = false
+                        records = true
+                        immutablePojos = true
+                        fluentSetters = true
+                    }
+                    target {
+                        packageName = 'nu.studer.sample'
+                        directory = 'build/generated/sources/annotationProcessor/java/main'  // default (can be omitted)
+                    }
+                    strategy.name = 'org.jooq.codegen.DefaultGeneratorStrategy'
+                }
+            }
+        }
+    }
+}
+
