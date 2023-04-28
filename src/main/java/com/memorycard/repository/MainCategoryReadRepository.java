@@ -35,4 +35,6 @@ public class MainCategoryReadRepository {
                 .where(mainCategory.ID.eq(id))
                 .fetchOneInto(MainCategoryEntity.class);
     }
+
+
 }

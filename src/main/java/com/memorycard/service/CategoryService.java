@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
@@ -63,7 +65,11 @@ public class CategoryService {
     }
 
     public void deleteMiddleCategory(MiddleCategoryDto middleCategoryDto) {
-        middleCategoryWriteRepository.delete(middleCategoryDto.toEntity())
+        middleCategoryWriteRepository.delete(middleCategoryDto.toEntity());
+    }
+
+    public List<MiddleCategoryEntity> getMiddleCategoriesByMainCategoryId(Long id) {
+        return middleCategoryReadRepository.getMiddleCategoriesByMainCategoryId(id);
     }
 
 
